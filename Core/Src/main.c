@@ -21,6 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <math.h>
 #include "stdio.h"
 /* USER CODE END Includes */
 
@@ -40,6 +41,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+TIM_HandleTypeDef htim1;
+
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
@@ -50,30 +53,20 @@ UART_HandleTypeDef huart2;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_USART1_UART_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-GPIO_TypeDef * LeftGPIO[8] = {GPIOB,GPIOB,GPIOB,GPIOB,GPIOA,GPIOA, GPIOB, GPIOB };
-uint16_t LeftPin[8] = {GPIO_PIN_0,GPIO_PIN_7, GPIO_PIN_6,GPIO_PIN_1,GPIO_PIN_8,GPIO_PIN_11, GPIO_PIN_5,GPIO_PIN_4 };
-
-GPIO_TypeDef * RightGPIO[8] = {GPIOA, GPIOA, GPIOA, GPIOA, GPIOA, GPIOA, GPIOB, GPIOA};
-uint16_t RightPin[8] = {GPIO_PIN_7, GPIO_PIN_6, GPIO_PIN_5, GPIO_PIN_4, GPIO_PIN_3, GPIO_PIN_1, GPIO_PIN_3, GPIO_PIN_12 };
-
-GPIO_PinState leftpin[8], rightpin[8];
-int leftdata[8], rightdata[8];
-char send[50];
+uint8_t data[95][160];
 uint8_t right = 0xCA;
 uint8_t left = 0xC2;
 uint8_t speed = 0x20;
-uint8_t morespeed = 0x40;
 uint8_t zerospeed = 0x00;
-uint8_t backRight = 0xC9;
-uint8_t backLeft = 0xC1;
 /* USER CODE END 0 */
 
 /**
@@ -83,6 +76,8 @@ uint8_t backLeft = 0xC1;
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+
+
 
   /* USER CODE END 1 */
 
@@ -104,129 +99,142 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-
+//  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	HAL_UART_Transmit(&huart1, &right, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &speed, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &left, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &speed, sizeof(uint8_t), 3000);
+
   while (1)
   {
-		for (int i = 0; i< 8; i++)
-		{
-			leftpin[i] = HAL_GPIO_ReadPin(LeftGPIO[i], LeftPin[i]);
-			if (i == 1 || i == 2)
-			{
-				rightpin[i] = GPIO_PIN_RESET;
-			}
-			else
-			{
-				rightpin[i] = HAL_GPIO_ReadPin(RightGPIO[i], RightPin[i]);
-			}
-			if (leftpin[i] == GPIO_PIN_SET )
-			{
-				leftdata[i] = 1;
-			}
-			else 
-			{
-				leftdata[i] = 0;
-			}
-			if (rightpin[i] == GPIO_PIN_SET )
-			{
-				rightdata[i] = 1;
-			}
-			else 
-			{
-				rightdata[i] = 0;
-			}
-		}
-		
-		for (int i = 0; i< 50; i++)
-		{
-			send[i] = 0;
-		}
-		
-//		sprintf( send,"Left : %d%d%d%d%d%d%d%d\r\n",  leftdata[0], leftdata[1], leftdata[2], leftdata[3], leftdata[4], leftdata[5], leftdata[6], leftdata[7]);
-//		HAL_UART_Transmit(&huart2, (uint8_t*) send, 50, 2000);
-//		
-//		sprintf(send,"Right : %d%d%d%d%d%d%d%d\r\n", rightdata[0], rightdata[1], rightdata[2], rightdata[3], rightdata[4], rightdata[5], rightdata[6], rightdata[7]);
-//		HAL_UART_Transmit(&huart2, (uint8_t*) send, 50, 2000);
-		int addleft = 0, addright= 0, flagright = 0, flagleft;
-		for (int i =0; i < 8; i++)
-		{
-			addleft += (4) * leftdata[i]*2;
-		}
-		uint8_t rightspeed;
-		uint8_t leftspeed = 30 /*+addleft*/;
-		
-		for (int i =0; i < 8; i++)
-		{
-			addright += (4) * rightdata[i]*2;
-		}
-		rightspeed = 30 /*+ addright*/;
-		
-		if (flagleft)
-		{
-			if (addleft>0)
-			{
-				rightspeed = 0;
-				leftspeed = 30;
-			}
-			else 
-				flagleft = 0;
-			
-		}
-		
-		if (flagright)
-		{
-			if (addright>0)
-			{
-				rightspeed = 30;
-				leftspeed = 0;
-			}
-			else 
-				flagright = 0;
-			
-		}
-		
-		if (addleft > 0)
-		{
-			leftspeed = 30;
-			rightspeed = 0;
-			flagleft = 1;
-		}
-		if (addright > 0)
-		{
-			rightspeed = 30;
-			leftspeed = 0;
-			flagright = 1;
-		}
-		
-		
-		
-		
-		
-	HAL_UART_Transmit(&huart1, &right, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &rightspeed, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &left, sizeof(uint8_t), 3000);
-	HAL_UART_Transmit(&huart1, &leftspeed, sizeof(uint8_t), 3000);	
-		
-		if (flagleft || flagright)
-			HAL_Delay(4000);
-		
-		
-		
-		HAL_Delay(10);
+	  char c='c';
+
+	  	uint8_t image2[95][160];
+	  	HAL_UART_Transmit(&huart1,(uint8_t*) &c, 1, HAL_MAX_DELAY);
+	  	for (int i  = 0; i < 95; i++)
+	  	{
+	//  		if (i == 94)
+	//  		{
+	//  			HAL_UART_Receive(&huart1, data[i], 159, HAL_MAX_DELAY);
+	//  		}
+	  		HAL_UART_Receive(&huart1, data[i], 160, HAL_MAX_DELAY);
+	  	}
+
+	//  	HAL_UART_Receive(&huart1, *data, 100, HAL_MAX_DELAY);
+
+
+
+	     for (int i = 0; i < 95; i++)
+	     {
+	       for (int j = 0; j < 160; j++)
+	       {
+	         if (i == 0 || i == 94 || j == 0 || j == 159)
+	         {
+	           image2[i][j] = (uint8_t) 0;
+	         }
+	         else
+	         {
+	           int gradientX = data[i][j + 1] - data[i][j - 1];
+	           int gradientY = data[i + 1][j] - data[i - 1][j];
+
+	           int cl= gradientX * gradientX + gradientY  * gradientY;
+	           float gradient =  sqrt(cl);
+	           // Serial.printf("%f\n", gradient);
+	           uint8_t gr = (uint8_t) gradient;
+	           image2[i][j] = gr;
+	         }
+	       }
+	     }
+
+
+		 uint8_t leftFlag = 0, rightFlag = 0, leftNumber = 0, rightNumber= 0;
+		 for (int i = 94; i >=30; i--)
+		 {
+		   int yindexLeft = -0.4 * i + 90;
+		   int yindexRight = 0.4 * i + 85;
+
+		   if (!leftFlag && image2[i][yindexLeft] >= 100)
+		   {
+			 leftFlag = 1;
+			 leftNumber = i;
+		   }
+		   if (!rightFlag && image2[i][yindexRight] >= 100)
+		   {
+			 rightFlag = 1;
+			 rightNumber = i;
+		   }
+		 }
+//		 char send[50];
+//		 char send2[50];
+//		 char send3[50];
+//		 	 for (int i = 0; i< 50; i++)
+//		 		 send[i]=0;
+//		 for (int i = 0; i< 50; i++)
+//			 send3[i]=0;
+//		 for (int i = 0; i< 50; i++)
+//		 		 send2[i]=0;
+//		 if (leftFlag)
+//		 sprintf(send, "turn Right\r\n");
+//		 else sprintf(send, "dont turn Right\r\n");
+//		 if (rightFlag)
+//			 sprintf(send2, "turn left\r\n");
+//		 else sprintf(send2, "dont turn left\r\n");
+//
+//		 sprintf(send3, "Left value: %d\nRight value: %d\r\n", leftNumber, rightNumber);
+
+//		 uint8_t left, right;
+//		 if (leftFlag)
+//		 {
+//
+//		 }
+		 if (rightNumber == 0)
+		 {
+			 rightNumber = 20;
+		 } else if (rightNumber < 60)
+		 {
+			 rightNumber = 20 + (rightNumber - 30) /3;
+		 } else
+		 {
+			 rightNumber = 20 + (rightNumber - 30) /4;
+		 }
+		 if (leftNumber == 0)
+		 {
+			 leftNumber = 20;
+		 } else if (leftNumber < 60)
+		 {
+			 leftNumber = 20 + (leftNumber - 30) /3;
+		 } else
+		 {
+			 leftNumber = 20 + (leftNumber - 30) /4;
+		 }
+
+		HAL_UART_Transmit(&huart2, &right, sizeof(uint8_t), 3000);
+		HAL_UART_Transmit(&huart2, &rightNumber, sizeof(uint8_t), 3000);
+		HAL_UART_Transmit(&huart2, &left, sizeof(uint8_t), 3000);
+		HAL_UART_Transmit(&huart2, &leftNumber, sizeof(uint8_t), 3000);
+
+	//	 for (int i  = 0; i < 95; i++)
+	//	 {
+	//		 for (int j = 0; j < 160; j++)
+	//		 {
+	//			 char sendd[4];
+	//			 sprintf(sendd, "%*d", 4, data[i][j]);
+	//			 HAL_UART_Transmit(&huart2,(uint8_t*) sendd , 4, HAL_MAX_DELAY);
+	//		 }
+	//	 }
+//		 HAL_UART_Transmit(&huart2, send , 50, HAL_MAX_DELAY);
+//		 HAL_UART_Transmit(&huart2, send2 , 50, HAL_MAX_DELAY);
+//		 HAL_UART_Transmit(&huart2, send3 , 50, HAL_MAX_DELAY);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
+  uint8_t done = 'd';
+      	HAL_UART_Transmit(&huart2, &done, 1, HAL_MAX_DELAY );
   /* USER CODE END 3 */
 }
 
@@ -291,6 +299,53 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 31;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 65535;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
+
+}
+
+/**
   * @brief USART1 Initialization Function
   * @param None
   * @retval None
@@ -306,7 +361,7 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 19200;
+  huart1.Init.BaudRate = 230400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
   huart1.Init.StopBits = UART_STOPBITS_1;
   huart1.Init.Parity = UART_PARITY_NONE;
@@ -341,7 +396,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 19200;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;
@@ -376,23 +431,15 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pins : PA1 PA3 PA4 PA5
-                           PA6 PA7 PA8 PA11
-                           PA12 */
-  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4|GPIO_PIN_5
-                          |GPIO_PIN_6|GPIO_PIN_7|GPIO_PIN_8|GPIO_PIN_11
-                          |GPIO_PIN_12;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : PB0 PB1 PB3 PB4
-                           PB5 PB6 PB7 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_3|GPIO_PIN_4
-                          |GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : LD3_Pin */
+  GPIO_InitStruct.Pin = LD3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */

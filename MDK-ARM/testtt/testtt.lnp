@@ -1,0 +1,27 @@
+--cpu=Cortex-M4.fp --branchpatch=sdcomp-29491-629360
+"testtt\startup_stm32l432xx.o"
+"testtt\main.o"
+"testtt\stm32l4xx_it.o"
+"testtt\stm32l4xx_hal_msp.o"
+"testtt\stm32l4xx_hal_tim.o"
+"testtt\stm32l4xx_hal_tim_ex.o"
+"testtt\stm32l4xx_hal_uart.o"
+"testtt\stm32l4xx_hal_uart_ex.o"
+"testtt\stm32l4xx_hal.o"
+"testtt\stm32l4xx_hal_rcc.o"
+"testtt\stm32l4xx_hal_rcc_ex.o"
+"testtt\stm32l4xx_hal_flash.o"
+"testtt\stm32l4xx_hal_flash_ex.o"
+"testtt\stm32l4xx_hal_flash_ramfunc.o"
+"testtt\stm32l4xx_hal_gpio.o"
+"testtt\stm32l4xx_hal_dma.o"
+"testtt\stm32l4xx_hal_dma_ex.o"
+"testtt\stm32l4xx_hal_pwr.o"
+"testtt\stm32l4xx_hal_pwr_ex.o"
+"testtt\stm32l4xx_hal_cortex.o"
+"testtt\stm32l4xx_hal_exti.o"
+"testtt\system_stm32l4xx.o"
+--strict --scatter "testtt\testtt.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "testtt.map" -o testtt\testtt.axf

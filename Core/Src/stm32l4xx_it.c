@@ -26,6 +26,10 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN TD */
+extern uint8_t data[95][160];
+extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart2;
+uint16_t receivedByteCount = 0;
 
 /* USER CODE END TD */
 
@@ -55,7 +59,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -197,6 +201,40 @@ void SysTick_Handler(void)
 /* For the available peripheral interrupt handler names,                      */
 /* please refer to the startup file (startup_stm32l4xx.s).                    */
 /******************************************************************************/
+
+/**
+  * @brief This function handles USART1 global interrupt.
+  */
+void USART1_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART1_IRQn 0 */
+//	uint8_t receivedByte;
+//
+//	HAL_UART_Receive(&huart1, &receivedByte, 1, HAL_MAX_DELAY);
+//    uint16_t x = receivedByteCount / 160;
+//    uint16_t y = receivedByteCount % 160;
+//
+////    // Store the received byte in the corresponding cell of the 2D array
+//    data[x][y] = receivedByte;
+//
+////    // Increment the received byte count
+//    receivedByteCount++;
+//
+////    // Check if the entire image has been received
+//
+//    if (receivedByteCount == 160 * 95)
+//    {
+//      // Image reception complete, perform further processing or display the image
+//      // ...
+//    	uint8_t done = 'd';
+//    	HAL_UART_Transmit(&huart2, &done, 1, HAL_MAX_DELAY );
+//    }
+  /* USER CODE END USART1_IRQn 0 */
+  HAL_UART_IRQHandler(&huart1);
+  /* USER CODE BEGIN USART1_IRQn 1 */
+
+  /* USER CODE END USART1_IRQn 1 */
+}
 
 /* USER CODE BEGIN 1 */
 
