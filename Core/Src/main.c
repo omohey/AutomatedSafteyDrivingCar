@@ -108,7 +108,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+  HAL_TIM_Base_Start(&htim1);
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+  HAL_Delay(100);
+  uint32_t distance;
   while (1)
   {
 	  char c='c';
@@ -122,6 +125,12 @@ int main(void)
 	//  			HAL_UART_Receive(&huart1, data[i], 159, HAL_MAX_DELAY);
 	//  		}
 	  		HAL_UART_Receive(&huart1, data[i], 160, HAL_MAX_DELAY);
+
+//	  		if (i ==0 || i == 30 || i ==60)
+//	  		{
+//
+//	  		}
+
 	  	}
 
 	//  	HAL_UART_Receive(&huart1, *data, 100, HAL_MAX_DELAY);
@@ -149,6 +158,44 @@ int main(void)
 	         }
 	       }
 	     }
+	     distance = 0;
+
+	     while(distance <50)
+	     {
+	    	 HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_SET);
+			//create 10?S delay by setting the TIM Counter Register value to 0
+				__HAL_TIM_SET_COUNTER(&htim1, 0);
+				while (__HAL_TIM_GET_COUNTER(&htim1)!= 10) {};
+			// pull TRIG low
+					HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+
+				while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_RESET){
+					if (__HAL_TIM_GET_COUNTER(&htim1) > 45000)
+					{
+						continue;
+					}
+				}
+					uint32_t first = __HAL_TIM_GET_COUNTER(&htim1);
+					while(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_4) == GPIO_PIN_SET){
+						if (__HAL_TIM_GET_COUNTER(&htim1) > 45000)
+						{
+							continue;
+						}
+					}
+					uint32_t second = __HAL_TIM_GET_COUNTER(&htim1);
+					distance = (second - first)/58;
+
+					int sendDistance = distance;
+					if (distance < 50)
+					{
+						HAL_UART_Transmit(&huart2, &right, sizeof(uint8_t), 3000);
+						HAL_UART_Transmit(&huart2, &zerospeed, sizeof(uint8_t), 3000);
+						HAL_UART_Transmit(&huart2, &left, sizeof(uint8_t), 3000);
+						HAL_UART_Transmit(&huart2, &zerospeed, sizeof(uint8_t), 3000);
+						HAL_Delay(1000);
+					}
+	     }
+
 
 
 		 uint8_t leftFlag = 0, rightFlag = 0, leftNumber = 0, rightNumber= 0;
@@ -432,7 +479,23 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_3, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA4 */
+  GPIO_InitStruct.Pin = GPIO_PIN_4;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD3_Pin */
   GPIO_InitStruct.Pin = LD3_Pin;
