@@ -67,11 +67,17 @@ This project aims to support partial autonomous driving safety procedures to ens
 
 ### Instructions
 
-- Use the source code in the STM32 Nucleo board folder to program the STM32 Nucleo board. Note: you might want to use STMCubeMX to setup UART1 (setup baud rate at 19200), UART2 (setup baud rate to 230,400), and TIM1 (use a prescalar of 31 to achieve a 1us clock tick).
 - Use the source code in the ESP32 CAM folder to program the ESP32 CAM.
+
+* Open Arduino IDE and load the code into the camera. Note: you need to reset the camera anytime its power is cut off.
+
+- Use the source code in the STM32 Nucleo board folder to program the STM32 Nucleo board. Note: you might want to use STMCubeMX to setup UART1 (setup baud rate at 19200), UART2 (setup baud rate to 230,400), and TIM1 (use a prescalar of 31 to achieve a 1us clock tick).
 - Connect UART1 to the Pololu TReX Motor Controller.
 - Connect UART2 to the ESP32 CAM.
 - Connect the ultrasonic sensor trig and echo pins to PA3 and PA4 pins respectively on the STM32 Nucleo board.
+
+* Open STM32CubeIDE and run the project
+
   ![Car Picture](https://i.postimg.cc/cCNcJRfc/Car.jpg)
 
 # Iterations
