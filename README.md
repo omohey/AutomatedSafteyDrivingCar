@@ -1,6 +1,6 @@
 # Automated Safety Driving Car
 
-## Presented By
+## Team Members By
 
 |     Name     |                              Github                               |
 | :----------: | :---------------------------------------------------------------: |
@@ -8,24 +8,6 @@
 |  Kareem Amr  |           [KareemAmr12](https://github.com/KareemAmr12)           |
 | Omar Mohamed | [OmarMoheyeldinMohamed](https://github.com/OmarMoheyeldinMohamed) |
 | Ahmed Dardir |            [ahesham900](https://github.com/ahesham900)            |
-
-## Presented To & Supervised By:
-
-Dr Mohamed Shalan
-
-## [Github Repo](https://github.com/OmarMoheyeldinMohamed/AutomatedSafteyDrivingCar)
-
-## Problem Statement
-
-"According to the World Health Organization (WHO), over 1.35 Millions are killed each year due to traffic accidents, these accidents stem from the human errors and lack of following traffic rules. There are trials to increase the safety procedures by automated systems to help drivers abide by traffic rules. Consequently, partial autonomous reliable systems are approached to handle this problem in a safer way.
-
-## Background & Motivation
-
-With the aforementioned numbers regarding death tolls due to traffic accidents, These traffic accidents are largely dependent on and caused by the lack of abiding by traffic rules. Hence, with the increase of demand on embedded systems especially in the automotive industry, we got motivated to explore more about the industry based on what we learned in the course so far as well as the lab to develop a model categorized under Partial autonomous driving systems that can increase safety features for a self driving car and then investigate how it can be integrated to help humans later on.
-
-## The Proposed Solution
-
-This project aims to support partial autonomous driving safety procedures to ensure the car abides by the traffic rules and road conditions. The system will use the ESP-32 Camera with fish eye lens to make sure car will not cross the 2 lanes navigating in between. There will be another safety feature to measure distance between the car and any abject in front it in order to detect it and stop the car accordingly. It will also continue after the removal of the object in the right way between lanes. Hence, this increases safety and alarming conditions to the self driving car which can be incorporated later on a larger scope in a real time system.
 
 ## Features
 
@@ -80,19 +62,6 @@ This project aims to support partial autonomous driving safety procedures to ens
 
   ![Car Picture](https://i.postimg.cc/cCNcJRfc/Car.jpg)
 
-# Iterations
-
-## The First Milestone
-
-- Integrating the Infrared sensors to try applying the lane detection
-- Link For Demo: [Demo](https://drive.google.com/drive/folders/1-3KJ91FfxfCk9-20nycJq1BGQrZUv5BV)
-
-## Final Milestone
-
-- Integrating the ESP32 CAM to the STM32 Nucleo board to capture images and send them to the STM32 Nucleo board and process the image to detect and follow a lane.
-- Using the ultrasonic sensor to detect objects infront of the car and stop it.
-- Link For Demo: [Demo](https://drive.google.com/file/d/19p_erXYdElvhYQwuB0MS8_ObLfitgnJr/view?usp=sharing)
-
 # How it Works
 
 ## Taking the picture
@@ -112,6 +81,8 @@ The STM32 Nucleo board receives the image from the ESP32 CAM and processes it to
 A fisheye camera lens was used to capture a wider view of the road. This added a challenge to the lane detection algorithm as the two lane lines are not parrallel as seen in the image. Therefore the lane detection algorithm now simulates two lines that would have been the car tires' path and if these lines intersect the lane lines then the car should move in the opposite direction. For example, if the line from the left tire intersects a lane line the car should move to the right and vice versa. The image below shows the two lines simulated by the algorithm.
 
 ![Simulated Lines](https://i.postimg.cc/cHW7cRZ5/car.png)
+
+Link For Demo: [Demo](https://drive.google.com/file/d/19p_erXYdElvhYQwuB0MS8_ObLfitgnJr/view?usp=sharing)
 
 ## Next Steps & Future Work
 
