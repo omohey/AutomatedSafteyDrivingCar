@@ -74,7 +74,7 @@ The ESP32 CAM takes a picture when it receives a signal from the STM32 Nucleo bo
 
 The STM32 Nucleo board receives the image from the ESP32 CAM and processes it to detect the lines using edge detection. An example of the image after edge detection is shown below.
 
-![Image After Edge Detection]([https://i.postimg.cc/3wBnyfQx/kiroimage17.png](https://drive.google.com/file/d/1FCibh1DvLtYO7S9XBFpyt33uABiV2s0t/view))
+![Image After Edge Detection](https://drive.google.com/thumbnail?id=1FCibh1DvLtYO7S9XBFpyt33uABiV2s0t)
 
 ## How to move the car
 
